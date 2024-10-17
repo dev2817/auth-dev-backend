@@ -8,6 +8,7 @@ interface PermissionDocument extends Omit<PermissionType, '_id'>, Document {
 const permissionSchema = new Schema<PermissionDocument>({
     name: { type: String, required: true },
     description: { type: String },
+    isActive: { type: Boolean, default: true },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
 });

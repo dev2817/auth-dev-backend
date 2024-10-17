@@ -17,9 +17,9 @@ app.use('/auth-dev/api/test', (req, res) => {
     res.send({ message: "Server is running!", success: true })
 })
 
-app.use("/auth-dev/api",router)
+app.use("/auth-dev/api", router)
 
-connectDB()
+connectDB();
 
 app.listen(port, () => {
     logger.info(`Server listening on port ${port}`);

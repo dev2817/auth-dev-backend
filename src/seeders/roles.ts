@@ -22,16 +22,19 @@ export const insertRoles = async (permissionDocs: Permission[], projectDocs: Pro
         const roles = [
             {
                 name: "Super Admin",
+                code: 'SPRADMIN',
                 permissions: superAdminPermissions,
                 project: project._id,
             },
             {
                 name: "Admin",
+                code: 'ADMIN',
                 permissions: adminPermissions,
                 project: project._id,
             },
             {
                 name: "User",
+                code: 'USR',
                 permissions: [],
                 project: project._id,
             },

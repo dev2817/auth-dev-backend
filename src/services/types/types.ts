@@ -8,3 +8,50 @@ export type CreateUserInput = {
     profileImage?: string;
     roles?: string[];
 }
+
+export type UpdateUserInput = {
+    name?: string;
+    username?: string;
+    mobile?: string;
+    emailVerified?: boolean;
+    profileImage?: string;
+}
+
+export type ProjectInput = {
+    name: string;
+    description?: string
+}
+
+export type PermissionInput = {
+    name: string;
+    description?: string
+}
+
+export type RoleInput = {
+    name: string;
+    code: string;
+    description?: string;
+    project: string;
+    permissions: string[];
+};
+
+export type UpdateProjectInput = {
+    name: string;
+    description?: string;
+    isActive?: boolean;
+}
+
+export type UpdatePermissionInput = {
+    name: string;
+    description?: string;
+    isActive?: boolean;
+}
+
+export type UpdateRoleInput = {
+    name: string;
+    code: string;
+    description?: string;
+    project: string;
+    permissions?: string[];
+    isActive?: boolean
+};

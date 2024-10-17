@@ -6,9 +6,12 @@ interface RoleDocument extends Omit<RoleType, '_id'>, Document {
 }
 
 const roleSchema = new Schema<RoleDocument>({
-    name: { type: String, required: true },
+    name: { type: String, required: true, unique: true },
+    code: { type: String, required: true, unique: true },
+    description: { type: String },
     project: { type: Schema.Types.ObjectId, ref: "Project", required: true },
     permissions: [{ type: Schema.Types.ObjectId, ref: "Permission" }],
+    isActive: { type: Boolean, default: true },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
 });

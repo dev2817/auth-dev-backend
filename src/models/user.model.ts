@@ -13,9 +13,10 @@ const userSchema = new Schema<UserDocument>({
     mobile: { type: String, required: true },
     password: { type: String, required: true },
     emailVerified: { type: Boolean, default: false },
-    profileImage: {type: String},
+    profileImage: { type: String },
     roles: [{ type: Schema.Types.ObjectId, ref: "Role" }],
     devices: [{ type: Schema.Types.ObjectId, ref: "Device" }],
+    isActive: { type: Boolean, default: true },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
 });

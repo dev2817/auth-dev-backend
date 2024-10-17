@@ -1,16 +1,10 @@
 import express from 'express';
-import { signUpUser } from '../controllers/user.controller.ts';
+import { signUpUser, updateUser } from '../controllers/user.controller.ts';
 
 const router = express.Router();
 
-router.route('/getUsers').get((req, res) => {
-    res.send({
-        data: [],
-        message: "Got all users successfully!",
-        success: true
-    })
-});
-
 router.route('/signUp').post(signUpUser);
+
+router.route('/updateUser/:userId').put(updateUser);
 
 export default router;
