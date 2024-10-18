@@ -1,8 +1,8 @@
-import { Device } from "./device.model";
-import { Permission } from "./permission.model";
-import { Project } from "./project.model";
-import { Role } from "./role.model";
-import { User } from "./user.model";
+import { Device } from "./device.model.ts";
+import { Permission } from "./permission.model.ts";
+import { Project } from "./project.model.ts";
+import { Role } from "./role.model.ts";
+import { User } from "./user.model.ts";
 
 export {
     Role,

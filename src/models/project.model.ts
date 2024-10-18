@@ -7,6 +7,7 @@ interface ProjectDocument extends Omit<ProjectType, '_id'>, Document {
 
 const projectSchema = new Schema<ProjectDocument>({
     name: { type: String, required: true },
+    code: {type: String, required: true, unique: true},
     description: { type: String },
     isActive: { type: Boolean, default: true },
     createdAt: { type: Date, default: Date.now },

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { createUser, forgotPassword, generateOtpForUser, logIn, otpVerify, resetPassword, updateUserData } from "../services/user.service.ts";
+import { createUser, forgotPassword, generateOtpForUser, getUserData, logIn, otpVerify, resetPassword, updateUserData } from "../services/user.service.ts";
 
 export const signUpUser = async (req: Request, res: Response) => {
     try {
@@ -23,7 +23,7 @@ export const logInUser = async (req: Request, res: Response) => {
 
 export const resendOtp = async (req: Request, res: Response) => {
     try {
-        const user = await generateOtpForUser(req.body);
+        const user = await generateOtpForUser(req.body.name);
         res.send(user);
     }
     catch (err: any) {
@@ -33,7 +33,7 @@ export const resendOtp = async (req: Request, res: Response) => {
 
 export const forgotPasswordData = async (req: Request, res: Response) => {
     try {
-        const user = await forgotPassword(req.body);
+        const user = await forgotPassword(req.body.name);
         res.send(user);
     }
     catch (err: any) {
@@ -70,3 +70,14 @@ export const updateUser = async (req: Request, res: Response) => {
         throw err;
     }
 }
+
+export const getUserById = async (req: Request, res: Response) => {
+    try {
+        const user = await getUserData(req.params.userId);
+        res.send(user);
+    }
+    catch (err: any) {
+        throw err;
+    }
+}
+

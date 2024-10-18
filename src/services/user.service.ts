@@ -3,12 +3,98 @@ import crypto from 'crypto';
 import { LogInInput } from "../types/types.ts";
 import { logger } from "../utils/logger.ts";
 import { generateJwtToken } from "../utils/token.ts";
-import { CreateUserInput, OtpInput, ResetPasswordInput, UpdateUserInput } from "./types/types.ts";
-import { Device, Role, User } from "../models/index.ts"
+import { CreateUserInput, OtpInput, ResetPasswordInput, UpdateDeviceGenerateTokenInput, UpdateUserInput } from "./types/types.ts";
+import { Device, Project, Role, User } from "../models/index.ts"
+import { sendMail } from '../utils/emailSender.ts';
 
-export const generateOtpForUser = async (email: string) => {
+const hashPassword = async (password: string) => {
     try {
-        const user = await User.findOne({ email });
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+        return { data: hashedPassword, success: true, message: "hashed password successfully!" };
+    }
+    catch (err: any) {
+        logger.error("Error generating OTP:", err);
+        return { success: false, message: "Error saving password!" };
+    }
+}
+
+const updateDeviceAndGenerateToken = async ({ ip, userId, roleId }: UpdateDeviceGenerateTokenInput) => {
+    try {
+        let device = await Device.findOne({ user: userId, ip: ip });
+
+        const generatedToken = await generateJwtToken({
+            userId: userId.toString(),
+            roleId: roleId.toString(),
+            ip,
+        });
+        if (!generatedToken.success) {
+            return {
+                success: false, message: "Error generating token!"
+            }
+        }
+
+        if (device) {
+            device.token = generatedToken.data as string;
+            await device.save();
+        } else {
+            device = await Device.create({
+                user: userId,
+                ip,
+                token: generatedToken.data,
+            });
+        }
+        return {
+            message: "update successful!",
+            data: generatedToken.data,
+            success: true
+        }
+    }
+    catch (err) {
+        logger.error("Error generating token:", err);
+        return { success: false, message: "Error generating token!" };
+    }
+}
+
+export const getUserRoleForProject = async (userId: string, projectId: string) => {
+    try {
+        const user = await User.findById(userId).populate('roles');
+
+        if (!user) {
+            return { message: "User not found", success: false };
+        }
+
+        const project = await Project.findById(projectId);
+
+        if (!project) {
+            return { message: "Project not found", success: false };
+        }
+
+        const rolesForProject = await Role.findOne({
+            _id: { $in: user.roles },
+            project: projectId,
+        });
+
+        if (!rolesForProject) {
+            return { message: "No roles found for this project", success: false };
+        }
+
+        return {
+            message: "Role found for the project",
+            success: true,
+            data: rolesForProject,
+        };
+    } catch (error: any) {
+        logger.error("Error fetching user roles for project:", error);
+        return { message: "Error fetching user roles for project", success: false };
+    }
+};
+
+export const generateOtpForUser = async (name: string) => {
+    try {
+        const user = await User.findOne({
+            $or: [{ username: name }, { email: name }],
+        });
 
         if (!user) {
             return { message: "User not found", success: false };
@@ -21,10 +107,14 @@ export const generateOtpForUser = async (email: string) => {
         user.otp = otp;
         user.otpExpiresAt = otpExpiresAt;
         await user.save();
-
+        await sendMail({
+            to: user.email,
+            subject: `OTP for verification ${otp}`,
+            content: `<html><body><h1>${otp}</h1></body></html>`
+        })
         return { message: "OTP generated successfully", success: true, otp };
     } catch (error: any) {
-        console.error("Error generating OTP:", error);
+        logger.error("Error generating OTP:", error);
         return { message: "Error generating OTP", success: false };
     }
 };
@@ -125,29 +215,20 @@ export const logIn = async (loginData: LogInInput) => {
             return { message: "Please verify your email!", success: false, verify: false };
         }
 
-        let device = await Device.findOne({ user: user._id, ip: loginData.ip });
-
-        const generatedToken = await generateJwtToken({
+        const token = await updateDeviceAndGenerateToken({
+            ip: loginData.ip,
             userId: user._id.toString(),
             roleId: projectRole._id.toString(),
-            ip: loginData.ip,
-        });
+        })
 
-        if (device) {
-            device.token = generatedToken.data as string;
-            await device.save();
-        } else {
-            device = await Device.create({
-                user: user._id,
-                ip: loginData.ip,
-                token: generatedToken.data,
-            });
+        if (!token.success) {
+            return token;
         }
 
         return {
             message: "Login successful",
             success: true,
-            token: generatedToken.data,
+            token: token.data,
         };
     } catch (err: any) {
         logger.error("Error logging in:", err);
@@ -214,9 +295,25 @@ export const otpVerify = async (otpData: OtpInput) => {
         }
 
         if (otpData.verify) {
-            user.emailVerified = true;
-            await user.save();
-            return { message: "Email verified successfully.", success: true, verify: true };
+            const projectRole = await getUserRoleForProject(user._id.toString(), otpData.projectId);
+
+            if (projectRole && projectRole.data) {
+                const token = await updateDeviceAndGenerateToken({
+                    ip: otpData.ip,
+                    userId: user._id.toString(),
+                    roleId: projectRole.data._id.toString(),
+                });
+
+                if (!token.success) {
+                    return token;
+                }
+
+                user.emailVerified = true;
+                await user.save();
+                return { message: "Email verified successfully.", success: true, verify: true, data: token.data };
+            }
+
+            return { message: projectRole?.message || "Project role not found.", success: false };
         }
 
         if (otpData.forgotPassword) {
@@ -240,15 +337,50 @@ export const resetPassword = async (resetPasswordData: ResetPasswordInput) => {
             return { message: "User not found. Please sign up.", success: false };
         }
 
-        await User.findOneAndUpdate(
-            { _id: user.id },
-            { password: resetPasswordData.password },
-            { new: true }
-        );
-        return { message: "Password reset successful, please login!", success: true }
-    }
-    catch (err: any) {
+        const hashed = await hashPassword(resetPasswordData.password);
+
+        if (hashed.success) {
+            await User.findOneAndUpdate(
+                { _id: user.id },
+                { password: hashed.data as string },
+                { new: true }
+            );
+
+            return { message: "Password reset successful, please login!", success: true };
+        }
+
+        return hashed;
+    } catch (err: any) {
         logger.error("Error resetting password:", err);
         return { message: `Error resetting password.`, success: false };
+    }
+};
+
+export const getUserData = async (userId: string) => {
+    try {
+        const user = await User.findById(userId)
+        .populate({
+            path: 'roles',
+            populate: {
+                path: 'project',
+            },
+        })
+        .populate({
+            path: 'roles',
+            populate: {
+                path: 'permissions',
+            },
+        });
+        if (user) {
+            return { message: "User found successfully", data: user, success: true }
+        }
+        return {
+            message: "User doesn't exist, please signup first",
+            success: false
+        }
+    }
+    catch (err: any) {
+        logger.error("Error getting user:", err);
+        return { message: `Error getting user.`, success: false };
     }
 }

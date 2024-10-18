@@ -20,6 +20,7 @@ export type UpdateUserInput = {
 
 export type ProjectInput = {
     name: string;
+    code: string;
     description?: string
 }
 
@@ -62,9 +63,17 @@ export type OtpInput = {
     otp: string;
     forgotPassword?: boolean;
     verify?: boolean;
+    ip: string;
+    projectId: string;
 }
 
 export type ResetPasswordInput = {
     name: string;
     password: string;
+}
+
+export type UpdateDeviceGenerateTokenInput = {
+    ip: string;
+    roleId: string;
+    userId: string;
 }

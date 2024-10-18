@@ -11,6 +11,7 @@ export type Permission = {
 
 export type Project = {
     name: string;
+    code: string;
     description?: string;
     isActive: boolean;
     createdAt: Date;
