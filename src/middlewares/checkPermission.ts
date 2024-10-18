@@ -36,3 +36,36 @@ export default checkPermission;
 
 
 // checkPermission({ requiredPermission: 'VIEW_DASHBOARD' })
+
+
+
+// validations
+
+// const msgList = {
+//     param: Joi.object().keys({
+//         chatId: Joi.string().required().messages({
+//             'any.required': message.PROVIDE_INPUT.replace('#', 'chat id'),
+//             'string.empty': message.VALID_INPUT.replace('#', 'chat id')
+//         })
+//     }),
+//     body: Joi.object().keys({
+//         userId: Joi.number().integer().positive().messages({
+//             'number.base': message.VALID_INPUT.replace('#', 'userId'),
+//             'number.integer': message.INTEGER_INPUT.replace('#', 'userId'),
+//             'number.positive': message.INTEGER_INPUT.replace('#', 'userId'),
+//         }),
+//     })
+// }
+// const getChat = {
+//     param: Joi.object().keys({
+//         chatId: Joi.string().required().messages({
+//             'any.required': message.PROVIDE_INPUT.replace('#', 'chat id'),
+//             'string.empty': message.VALID_INPUT.replace('#', 'chat id')
+//         })
+//     }),
+//     query: Joi.object().keys({
+//         search: Joi.string(),
+//         page: Joi.number(),
+//         limit: Joi.number(),
+//     })
+// }
