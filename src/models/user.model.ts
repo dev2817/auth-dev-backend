@@ -12,6 +12,8 @@ const userSchema = new Schema<UserDocument>({
     email: { type: String, unique: true, required: true },
     mobile: { type: String, required: true },
     password: { type: String, required: true },
+    otp: { type: String },
+    otpExpiresAt: { type: Date },
     emailVerified: { type: Boolean, default: false },
     profileImage: { type: String },
     roles: [{ type: Schema.Types.ObjectId, ref: "Role" }],

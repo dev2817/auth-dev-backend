@@ -1,4 +1,4 @@
-import { Permission } from "../models/permission.model.ts";
+import { Permission } from "../models/index.ts";
 import { logger } from "../utils/logger.ts";
 import { permissions } from "./constants.ts";
 import connectDB from "../db/mongoose.ts";

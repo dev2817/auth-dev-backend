@@ -1,5 +1,4 @@
-import { User } from "../models/user.model.ts";
-import { Role } from "../models/role.model.ts";
+import { User, Role } from "../models/index.ts";
 import { logger } from "../utils/logger.ts";
 import connectDB from "../db/mongoose.ts";
 

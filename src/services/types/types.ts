@@ -6,7 +6,8 @@ export type CreateUserInput = {
     password: string;
     emailVerified?: boolean;
     profileImage?: string;
-    roles?: string[];
+    roles: string[];
+    projectId: string;
 }
 
 export type UpdateUserInput = {
@@ -55,3 +56,15 @@ export type UpdateRoleInput = {
     permissions?: string[];
     isActive?: boolean
 };
+
+export type OtpInput = {
+    name: string
+    otp: string;
+    forgotPassword?: boolean;
+    verify?: boolean;
+}
+
+export type ResetPasswordInput = {
+    name: string;
+    password: string;
+}

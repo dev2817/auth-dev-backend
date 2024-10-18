@@ -1,7 +1,4 @@
-import { Permission } from "../models/permission.model.ts";
-import { Project } from "../models/project.model.ts";
-import { Role } from "../models/role.model.ts";
-import { User } from "../models/user.model.ts";
+import { Role, User, Project, Permission } from "../models/index.ts"
 import { logger } from "../utils/logger.ts";
 
 export const getAllUsersSuper = async () => {

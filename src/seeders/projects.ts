@@ -1,5 +1,5 @@
 import connectDB from "../db/mongoose.ts";
-import { Project } from "../models/project.model.ts";
+import { Project } from "../models/index.ts";
 import { logger } from "../utils/logger.ts";
 import { projects } from "./constants.ts";
 

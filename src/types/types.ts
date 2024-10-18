@@ -48,9 +48,24 @@ export type User = {
     password: string;
     profileImage?: string;
     emailVerified: boolean;
+    otp: string;
+    otpExpiresAt: Date;
     roles: Types.ObjectId[];
     devices: Types.ObjectId[];
     isActive: boolean;
     createdAt: Date;
     updatedAt: Date;
 };
+
+export type JwtPayload = {
+    userId: string;
+    roleId: string;
+    ip: string;
+}
+
+export type LogInInput = {
+    name: string;
+    password: string;
+    ip: string;
+    projectId: string;
+}

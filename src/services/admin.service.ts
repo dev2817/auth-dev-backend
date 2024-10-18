@@ -1,8 +1,5 @@
-import { Permission } from "../models/permission.model.ts";
-import { Project } from "../models/project.model.ts";
-import { Role } from "../models/role.model.ts";
-import { User } from "../models/user.model.ts";
 import { logger } from "../utils/logger.ts";
+import { Permission, Project, Role, User } from "../models/index.ts"
 import { PermissionInput, ProjectInput, RoleInput, UpdatePermissionInput, UpdateProjectInput, UpdateRoleInput } from "./types/types.ts";
 
 // admin services
