@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { superAdminService } from "../services/superAdmin.service.ts";
+import superAdminService from "../services/superAdmin.service.ts";
 
 const getUsers = async (req: Request, res: Response) => {
     try {
@@ -41,9 +41,11 @@ const getAllPermissions = async (req: Request, res: Response) => {
     }
 }
 
-export const superAdminController = {
+const superAdminController = {
     getAllPermissions,
     getAllProjects,
     getAllRoles,
     getUsers
 }
+
+export default superAdminController;

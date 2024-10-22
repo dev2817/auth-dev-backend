@@ -307,7 +307,7 @@ const deleteRole = async (roleId: string) => {
     }
 }
 
-export const adminService = {
+const adminService = {
     getAllUsers,
     createProject,
     getRoleById,
@@ -328,3 +328,5 @@ export const adminService = {
     deleteProject,
     updateProject,
 }
+
+export default adminService;

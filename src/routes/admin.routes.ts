@@ -1,10 +1,10 @@
 import express from 'express';
 
-import { authMiddleware } from '../middlewares/verifyToken.ts';
+import authMiddleware from '../middlewares/verifyToken.ts';
 import checkPermission from '../middlewares/checkPermission.ts';
 import validationSchema from '../validations/validations.ts';
 import validate from '../middlewares/apiValidator.ts';
-import { adminController } from '../controllers/admin.controller.ts';
+import adminController from '../controllers/admin.controller.ts';
 
 const router = express.Router();
 

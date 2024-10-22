@@ -442,7 +442,7 @@ const checkIfDataExists = async (userData: UserCheckData) => {
     }
 };
 
-export const userService = {
+const userService = {
     getUserRoleForProject,
     generateOtpForUser,
     forgotPassword,
@@ -454,3 +454,5 @@ export const userService = {
     updateUserData,
     otpVerify,
 }
+
+export default userService;

@@ -1,6 +1,6 @@
 import { ObjectSchema } from 'joi';
 
-export const validate = (schemas: {
+const validate = (schemas: {
     params?: ObjectSchema,
     body?: ObjectSchema,
     query?: ObjectSchema

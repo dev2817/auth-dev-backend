@@ -2,7 +2,7 @@ import { logger } from '../utils/logger.ts';
 import { verifyToken } from '../utils/token.ts';
 import { JwtPayload } from '../types/types.ts';
 
-export const authMiddleware = async (req: any, res: any, next: any) => {
+const authMiddleware = async (req: any, res: any, next: any) => {
     const authorizationHeader = req.headers.authorization;
     const token = authorizationHeader?.split(' ')[1];
 
@@ -26,3 +26,5 @@ export const authMiddleware = async (req: any, res: any, next: any) => {
         res.send({ message: 'Server error', success: false });
     }
 };
+
+export default authMiddleware;

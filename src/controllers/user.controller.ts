@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { userService } from "../services/user.service.ts";
+import userService from "../services/user.service.ts";
 
 
 const signUpUser = async (req: Request, res: Response) => {
@@ -92,7 +92,7 @@ const checkUserData = async (req: Request, res: Response) => {
     }
 }
 
-export const userController = {
+const userController = {
     signUpUser,
     updateUser,
     checkUserData,
@@ -103,3 +103,5 @@ export const userController = {
     resetPasswordData,
     otpVerifyData,
 }
+
+export default userController;

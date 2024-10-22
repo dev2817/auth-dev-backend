@@ -50,9 +50,11 @@ const getPermissionsSuper = async () => {
     }
 }
 
-export const superAdminService = {
+const superAdminService = {
     getAllUsersSuper,
     getRolesSuper,
     getProjectsSuper,
     getPermissionsSuper
 }
+
+export default superAdminService;

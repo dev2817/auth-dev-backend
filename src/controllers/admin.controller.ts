@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { adminService } from "../services/admin.service.ts";
+import adminService from "../services/admin.service.ts";
 
 //admin controllers
 
@@ -202,7 +202,7 @@ const deleteRoleData = async (req: Request, res: Response) => {
     }
 }
 
-export const adminController = {
+const adminController = {
     getUsers,
     addProject,
     getAllProjects,
@@ -223,3 +223,5 @@ export const adminController = {
     addRole,
     getPermissionDataById,
 }
+
+export default adminController;

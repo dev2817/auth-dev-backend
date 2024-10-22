@@ -1,7 +1,7 @@
 import express from 'express';
-import { authMiddleware } from '../middlewares/verifyToken.ts';
+import authMiddleware from '../middlewares/verifyToken.ts';
 import checkPermission from '../middlewares/checkPermission.ts';
-import { superAdminController } from '../controllers/superAdmin.controller.ts';
+import superAdminController from '../controllers/superAdmin.controller.ts';
 
 const router = express.Router();
 

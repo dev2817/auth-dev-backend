@@ -1,8 +1,8 @@
 import express from 'express';
-import { authMiddleware } from '../middlewares/verifyToken.ts';
-import { validate } from '../middlewares/apiValidator.ts';
+import authMiddleware from '../middlewares/verifyToken.ts';
+import validate from '../middlewares/apiValidator.ts';
 import validationSchema from '../validations/validations.ts';
-import { userController } from '../controllers/user.controller.ts';
+import userController from '../controllers/user.controller.ts';
 
 const router = express.Router();
 
