@@ -4,10 +4,8 @@ export type CreateUserInput = {
     email: string;
     mobile: string;
     password: string;
-    emailVerified?: boolean;
-    profileImage?: string;
     roles: string[];
-    projectId: string;
+    projectCode: string;
 }
 
 export type UpdateUserInput = {
@@ -64,7 +62,7 @@ export type OtpInput = {
     forgotPassword?: boolean;
     verify?: boolean;
     ip: string;
-    projectId: string;
+    projectCode: string;
 }
 
 export type ResetPasswordInput = {
@@ -76,4 +74,10 @@ export type UpdateDeviceGenerateTokenInput = {
     ip: string;
     roleId: string;
     userId: string;
+}
+
+export type UserCheckData = {
+    username?: "";
+    mobile?: "";
+    email?: "";
 }

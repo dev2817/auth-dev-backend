@@ -1,7 +1,7 @@
 import { Role, User, Project, Permission } from "../models/index.ts"
 import { logger } from "../utils/logger.ts";
 
-export const getAllUsersSuper = async () => {
+const getAllUsersSuper = async () => {
     try {
         const users = await User.find({ isActive: true });
         return { data: users, message: "Got all the users successfully!", success: true };
@@ -12,7 +12,7 @@ export const getAllUsersSuper = async () => {
     }
 }
 
-export const getRolesSuper = async () => {
+const getRolesSuper = async () => {
     try {
         const roles = await Role.find({
             isActive: true,
@@ -28,7 +28,7 @@ export const getRolesSuper = async () => {
     }
 };
 
-export const getProjectsSuper = async () => {
+const getProjectsSuper = async () => {
     try {
         const projects = await Project.find({ isActive: true });
         return { data: projects, message: "Got all projects successfully", success: true }
@@ -39,7 +39,7 @@ export const getProjectsSuper = async () => {
     }
 }
 
-export const getPermissionsSuper = async () => {
+const getPermissionsSuper = async () => {
     try {
         const permissions = await Permission.find({ isActive: true });
         return { data: permissions, message: "Got all permissions successfully", success: true }
@@ -48,4 +48,11 @@ export const getPermissionsSuper = async () => {
         logger.error("Error getting permissions:", err);
         return { message: `Error getting permissions`, success: false };
     }
+}
+
+export const superAdminService = {
+    getAllUsersSuper,
+    getRolesSuper,
+    getProjectsSuper,
+    getPermissionsSuper
 }

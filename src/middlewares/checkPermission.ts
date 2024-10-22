@@ -1,13 +1,12 @@
-import { NextFunction, Request, Response } from "express";
-import { JwtPayload, Permission } from "../types/types";
-import { Role } from "../models";
+import { JwtPayload, Permission } from "../types/types.ts";
+import { Role } from "../models/index.ts";
 
 type CheckPermissionOptions = {
   requiredPermission: string;
 }
 
 const checkPermission = (options: CheckPermissionOptions) => {
-  return async (req: Request, res: Response, next: NextFunction) => {
+  return async (req: any, res: any, next: any) => {
     try {
       const user = req.user as JwtPayload;
       const roleId = user.roleId;
@@ -35,7 +34,6 @@ const checkPermission = (options: CheckPermissionOptions) => {
 export default checkPermission;
 
 
-// checkPermission({ requiredPermission: 'VIEW_DASHBOARD' })
 
 
 

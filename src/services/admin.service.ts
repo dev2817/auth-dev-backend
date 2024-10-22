@@ -4,7 +4,7 @@ import { PermissionInput, ProjectInput, RoleInput, UpdatePermissionInput, Update
 
 // admin services
 
-export const getAllUsers = async () => {
+const getAllUsers = async () => {
     try {
         const adminRoles = await Role.find({ name: { $in: ["Admin", "Super Admin"] }, isActive: true });
 
@@ -23,7 +23,7 @@ export const getAllUsers = async () => {
 
 //project services
 
-export const createProject = async (projectData: ProjectInput) => {
+const createProject = async (projectData: ProjectInput) => {
     try {
         const project = await Project.create(projectData);
         return { data: project, message: "Project created successfully", success: true }
@@ -34,7 +34,7 @@ export const createProject = async (projectData: ProjectInput) => {
     }
 }
 
-export const getProjects = async () => {
+const getProjects = async () => {
     try {
         const projects = await Project.find({
             name: { $nin: ['Auth Dev'] },
@@ -48,7 +48,7 @@ export const getProjects = async () => {
     }
 }
 
-export const getProjectById = async (projectId: string) => {
+const getProjectById = async (projectId: string) => {
     try {
         const projects = await Project.findById(projectId);
         return { data: projects, message: "Got project successfully", success: true }
@@ -59,7 +59,7 @@ export const getProjectById = async (projectId: string) => {
     }
 }
 
-export const getProjectByIds = async (projectIds: string[]) => {
+const getProjectByIds = async (projectIds: string[]) => {
     try {
         const projects = await Project.find({
             _id: { $in: projectIds },
@@ -73,7 +73,7 @@ export const getProjectByIds = async (projectIds: string[]) => {
     }
 }
 
-export const updateProject = async (projectId: string, projectData: UpdateProjectInput) => {
+const updateProject = async (projectId: string, projectData: UpdateProjectInput) => {
     try {
         const project = await Project.findByIdAndUpdate(projectId,
             { $set: projectData },
@@ -86,7 +86,7 @@ export const updateProject = async (projectId: string, projectData: UpdateProjec
     }
 }
 
-export const deleteProject = async (projectId: string) => {
+const deleteProject = async (projectId: string) => {
     try {
         const project = await Project.findByIdAndUpdate(projectId,
             { $set: { isActive: false } },
@@ -104,7 +104,7 @@ export const deleteProject = async (projectId: string) => {
 
 // permission services
 
-export const createPermission = async (permissionData: PermissionInput) => {
+const createPermission = async (permissionData: PermissionInput) => {
     try {
         const permission = await Permission.create(permissionData);
         return { data: permission, message: "Permission created successfully", success: true }
@@ -115,7 +115,7 @@ export const createPermission = async (permissionData: PermissionInput) => {
     }
 }
 
-export const getPermissions = async () => {
+const getPermissions = async () => {
     try {
         const permissions = await Permission.find({
             name: { $nin: ['manage_admins'] },
@@ -129,7 +129,7 @@ export const getPermissions = async () => {
     }
 }
 
-export const getPermissionById = async (permissionId: string) => {
+const getPermissionById = async (permissionId: string) => {
     try {
         const permission = await Permission.findById(permissionId);
         return { data: permission, message: "Got permission successfully", success: true }
@@ -140,7 +140,7 @@ export const getPermissionById = async (permissionId: string) => {
     }
 }
 
-export const getPermissionByIds = async (permissionIds: string[]) => {
+const getPermissionByIds = async (permissionIds: string[]) => {
     try {
         const permissions = await Permission.find({
             _id: { $in: permissionIds },
@@ -154,7 +154,7 @@ export const getPermissionByIds = async (permissionIds: string[]) => {
     }
 }
 
-export const updatePermission = async (permissionId: string, permissionData: UpdatePermissionInput) => {
+const updatePermission = async (permissionId: string, permissionData: UpdatePermissionInput) => {
     try {
         const permission = await Permission.findByIdAndUpdate(permissionId,
             { $set: permissionData },
@@ -167,7 +167,7 @@ export const updatePermission = async (permissionId: string, permissionData: Upd
     }
 }
 
-export const deletePermission = async (permissionId: string) => {
+const deletePermission = async (permissionId: string) => {
     try {
         const permission = await Permission.findByIdAndUpdate(permissionId,
             { $set: { isActive: false } },
@@ -184,7 +184,7 @@ export const deletePermission = async (permissionId: string) => {
 
 // role services
 
-export const createRole = async (roleData: RoleInput) => {
+const createRole = async (roleData: RoleInput) => {
     try {
         const projectResponse = await getProjectById(roleData.project);
         if (!projectResponse.success || !projectResponse.data) {
@@ -211,7 +211,7 @@ export const createRole = async (roleData: RoleInput) => {
     }
 };
 
-export const getRoles = async () => {
+const getRoles = async () => {
     try {
         const roles = await Role.find({
             isActive: true,
@@ -228,7 +228,7 @@ export const getRoles = async () => {
     }
 };
 
-export const getRoleById = async (roleId: string) => {
+const getRoleById = async (roleId: string) => {
     try {
         const role = await Role.findById(roleId)
             .populate('project')
@@ -242,7 +242,7 @@ export const getRoleById = async (roleId: string) => {
     }
 };
 
-export const getRoleByIds = async (roleIds: string[]) => {
+const getRoleByIds = async (roleIds: string[]) => {
     try {
         const roles = await Role.find({
             _id: { $in: roleIds },
@@ -259,7 +259,7 @@ export const getRoleByIds = async (roleIds: string[]) => {
     }
 };
 
-export const updateRole = async (roleId: string, roleData: UpdateRoleInput) => {
+const updateRole = async (roleId: string, roleData: UpdateRoleInput) => {
     try {
         const projectResponse = await getProjectById(roleData.project);
         if (!projectResponse.success || !projectResponse.data) {
@@ -294,7 +294,7 @@ export const updateRole = async (roleId: string, roleData: UpdateRoleInput) => {
     }
 };
 
-export const deleteRole = async (roleId: string) => {
+const deleteRole = async (roleId: string) => {
     try {
         const role = await Role.findByIdAndUpdate(roleId,
             { $set: { isActive: false } },
@@ -305,4 +305,26 @@ export const deleteRole = async (roleId: string) => {
         logger.error("Error deleting Role:", err);
         return { message: `Error deleting Role`, success: false };
     }
+}
+
+export const adminService = {
+    getAllUsers,
+    createProject,
+    getRoleById,
+    updateRole,
+    getProjects,
+    deleteRole,
+    getRoles,
+    getPermissionByIds,
+    getProjectById,
+    getRoleByIds,
+    updatePermission,
+    deletePermission,
+    getPermissionById,
+    createPermission,
+    createRole,
+    getPermissions,
+    getProjectByIds,
+    deleteProject,
+    updateProject,
 }

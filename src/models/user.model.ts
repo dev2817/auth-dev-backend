@@ -10,7 +10,7 @@ const userSchema = new Schema<UserDocument>({
     name: { type: String, required: true },
     username: { type: String, unique: true, required: true },
     email: { type: String, unique: true, required: true },
-    mobile: { type: String, required: true },
+    mobile: { type: String, unique: true, required: true },
     password: { type: String, required: true },
     otp: { type: String },
     otpExpiresAt: { type: Date },

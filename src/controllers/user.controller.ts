@@ -1,9 +1,10 @@
 import { Request, Response } from "express";
-import { createUser, forgotPassword, generateOtpForUser, getUserData, logIn, otpVerify, resetPassword, updateUserData } from "../services/user.service.ts";
+import { userService } from "../services/user.service.ts";
 
-export const signUpUser = async (req: Request, res: Response) => {
+
+const signUpUser = async (req: Request, res: Response) => {
     try {
-        const user = await createUser(req.body);
+        const user = await userService.createUser(req.body);
         res.send(user);
     }
     catch (err: any) {
@@ -11,9 +12,9 @@ export const signUpUser = async (req: Request, res: Response) => {
     }
 }
 
-export const logInUser = async (req: Request, res: Response) => {
+const logInUser = async (req: Request, res: Response) => {
     try {
-        const user = await logIn(req.body);
+        const user = await userService.logIn(req.body);
         res.send(user);
     }
     catch (err: any) {
@@ -21,9 +22,9 @@ export const logInUser = async (req: Request, res: Response) => {
     }
 }
 
-export const resendOtp = async (req: Request, res: Response) => {
+const resendOtp = async (req: Request, res: Response) => {
     try {
-        const user = await generateOtpForUser(req.body.name);
+        const user = await userService.generateOtpForUser(req.body.name);
         res.send(user);
     }
     catch (err: any) {
@@ -31,9 +32,9 @@ export const resendOtp = async (req: Request, res: Response) => {
     }
 }
 
-export const forgotPasswordData = async (req: Request, res: Response) => {
+const forgotPasswordData = async (req: Request, res: Response) => {
     try {
-        const user = await forgotPassword(req.body.name);
+        const user = await userService.forgotPassword(req.body.name);
         res.send(user);
     }
     catch (err: any) {
@@ -41,9 +42,9 @@ export const forgotPasswordData = async (req: Request, res: Response) => {
     }
 }
 
-export const otpVerifyData = async (req: Request, res: Response) => {
+const otpVerifyData = async (req: Request, res: Response) => {
     try {
-        const user = await otpVerify(req.body);
+        const user = await userService.otpVerify(req.body);
         res.send(user);
     }
     catch (err: any) {
@@ -51,9 +52,9 @@ export const otpVerifyData = async (req: Request, res: Response) => {
     }
 }
 
-export const resetPasswordData = async (req: Request, res: Response) => {
+const resetPasswordData = async (req: Request, res: Response) => {
     try {
-        const user = await resetPassword(req.body);
+        const user = await userService.resetPassword(req.body);
         res.send(user);
     }
     catch (err: any) {
@@ -61,9 +62,9 @@ export const resetPasswordData = async (req: Request, res: Response) => {
     }
 }
 
-export const updateUser = async (req: Request, res: Response) => {
+const updateUser = async (req: Request, res: Response) => {
     try {
-        const user = await updateUserData(req.params.userId, req.body);
+        const user = await userService.updateUserData(req.params.userId, req.body);
         res.send(user);
     }
     catch (err: any) {
@@ -71,9 +72,9 @@ export const updateUser = async (req: Request, res: Response) => {
     }
 }
 
-export const getUserById = async (req: Request, res: Response) => {
+const getUserById = async (req: Request, res: Response) => {
     try {
-        const user = await getUserData(req.params.userId);
+        const user = await userService.getUserData(req.params.userId);
         res.send(user);
     }
     catch (err: any) {
@@ -81,3 +82,24 @@ export const getUserById = async (req: Request, res: Response) => {
     }
 }
 
+const checkUserData = async (req: Request, res: Response) => {
+    try {
+        const user = await userService.checkIfDataExists(req.body);
+        res.send(user);
+    }
+    catch (err: any) {
+        throw err;
+    }
+}
+
+export const userController = {
+    signUpUser,
+    updateUser,
+    checkUserData,
+    getUserById,
+    logInUser,
+    resendOtp,
+    forgotPasswordData,
+    resetPasswordData,
+    otpVerifyData,
+}

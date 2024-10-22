@@ -3,7 +3,7 @@ import crypto from 'crypto';
 import { LogInInput } from "../types/types.ts";
 import { logger } from "../utils/logger.ts";
 import { generateJwtToken } from "../utils/token.ts";
-import { CreateUserInput, OtpInput, ResetPasswordInput, UpdateDeviceGenerateTokenInput, UpdateUserInput } from "./types/types.ts";
+import { CreateUserInput, OtpInput, ResetPasswordInput, UpdateDeviceGenerateTokenInput, UpdateUserInput, UserCheckData } from "./types/types.ts";
 import { Device, Project, Role, User } from "../models/index.ts"
 import { sendMail } from '../utils/emailSender.ts';
 
@@ -56,7 +56,7 @@ const updateDeviceAndGenerateToken = async ({ ip, userId, roleId }: UpdateDevice
     }
 }
 
-export const getUserRoleForProject = async (userId: string, projectId: string) => {
+const getUserRoleForProject = async (userId: string, projectId: string) => {
     try {
         const user = await User.findById(userId).populate('roles');
 
@@ -90,7 +90,7 @@ export const getUserRoleForProject = async (userId: string, projectId: string) =
     }
 };
 
-export const generateOtpForUser = async (name: string) => {
+const generateOtpForUser = async (name: string) => {
     try {
         const user = await User.findOne({
             $or: [{ username: name }, { email: name }],
@@ -119,14 +119,19 @@ export const generateOtpForUser = async (name: string) => {
     }
 };
 
-export const createUser = async (userData: CreateUserInput) => {
+const createUser = async (userData: CreateUserInput) => {
     try {
         let existingUser = await User.findOne({
             $or: [{ username: userData.username }, { email: userData.email }],
         }).populate('roles');
 
+        const project = await Project.findOne({ code: userData.projectCode });
+
+        if (!project) {
+            return { success: false, message: "Project not found" }
+        }
         if (!existingUser) {
-            if (!userData.projectId) {
+            if (!userData.projectCode) {
                 const defaultRole = await Role.findOne({ code: "USR", isActive: true });
                 if (!defaultRole) {
                     return { message: "Default 'USR' role not found. Please check the roles collection.", success: false };
@@ -137,7 +142,7 @@ export const createUser = async (userData: CreateUserInput) => {
                     return { message: "Project role is required when a project ID is provided.", success: false };
                 }
 
-                const projectRole = await Role.findOne({ code: userData.roles, project: userData.projectId });
+                const projectRole = await Role.findOne({ code: userData.roles, project: project._id });
                 if (!projectRole) {
                     return { message: `Role with code '${userData.roles}' not found for the given project.`, success: false };
                 }
@@ -151,14 +156,14 @@ export const createUser = async (userData: CreateUserInput) => {
 
             if (!newUser.emailVerified) {
                 await generateOtpForUser(newUser.email);
-                return { message: "Please verify your email!", success: false, verify: false };
+                return { message: "Please verify your email!", success: true, verify: false };
             }
 
             logger.info("User created successfully:", newUser);
             return { message: "User created successfully!", success: true, data: newUser };
         } else {
-            if (userData.projectId && userData.roles) {
-                const projectRole = await Role.findOne({ code: userData.roles, project: userData.projectId });
+            if (project._id && userData.roles) {
+                const projectRole = await Role.findOne({ code: userData.roles, project: project._id });
                 if (!projectRole) {
                     return { message: `Role with code '${userData.roles}' not found for the given project.`, success: false };
                 }
@@ -174,7 +179,7 @@ export const createUser = async (userData: CreateUserInput) => {
 
             if (!existingUser.emailVerified) {
                 await generateOtpForUser(existingUser.email);
-                return { message: "Please verify your email!", success: false, verify: false };
+                return { message: "Please verify your email!", success: true, verify: false };
             }
 
             return { message: "User already exists with the provided details.", success: true, data: existingUser };
@@ -186,7 +191,7 @@ export const createUser = async (userData: CreateUserInput) => {
 };
 
 
-export const logIn = async (loginData: LogInInput) => {
+const logIn = async (loginData: LogInInput) => {
     try {
         const user = await User.findOne({
             $or: [{ username: loginData.name }, { email: loginData.name }],
@@ -196,9 +201,15 @@ export const logIn = async (loginData: LogInInput) => {
             return { message: "User not found. Please sign up.", success: false };
         }
 
+        const project = await Project.findOne({ code: loginData.projectCode });
+
+        if (!project) {
+            return { success: false, message: "Project not found" }
+        }
+
         const projectRole = await Role.findOne({
             _id: { $in: user.roles },
-            project: loginData.projectId,
+            project: project._id,
         });
 
         if (!projectRole) {
@@ -228,7 +239,7 @@ export const logIn = async (loginData: LogInInput) => {
         return {
             message: "Login successful",
             success: true,
-            token: token.data,
+            data: token.data,
         };
     } catch (err: any) {
         logger.error("Error logging in:", err);
@@ -236,7 +247,7 @@ export const logIn = async (loginData: LogInInput) => {
     }
 };
 
-export const updateUserData = async (userId: string, userData: UpdateUserInput) => {
+const updateUserData = async (userId: string, userData: UpdateUserInput) => {
     try {
         const updatedUser = await User.findByIdAndUpdate(
             userId,
@@ -256,7 +267,7 @@ export const updateUserData = async (userId: string, userData: UpdateUserInput) 
     }
 };
 
-export const forgotPassword = async (name: string) => {
+const forgotPassword = async (name: string) => {
     try {
         const user = await User.findOne({
             $or: [{ username: name }, { email: name }],
@@ -267,7 +278,7 @@ export const forgotPassword = async (name: string) => {
         }
 
         await generateOtpForUser(user.email);
-        return { message: "Please check your email for otp!", success: false, forgotPassword: false };
+        return { message: "Please check your email for otp!", success: true, forgotPassword: false };
     }
     catch (err: any) {
         logger.error("Error resetting password:", err);
@@ -275,7 +286,7 @@ export const forgotPassword = async (name: string) => {
     }
 }
 
-export const otpVerify = async (otpData: OtpInput) => {
+const otpVerify = async (otpData: OtpInput) => {
     try {
         const user = await User.findOne({
             $or: [{ username: otpData.name }, { email: otpData.name }],
@@ -289,13 +300,19 @@ export const otpVerify = async (otpData: OtpInput) => {
             return { message: "Invalid OTP.", success: false };
         }
 
+        const project = await Project.findOne({ code: otpData.projectCode });
+
+        if (!project) {
+            return { success: false, message: "Project not found" }
+        }
+
         const currentTime = new Date();
         if (user.otpExpiresAt < currentTime) {
             return { message: "OTP has expired. Please request a new one.", success: false };
         }
 
         if (otpData.verify) {
-            const projectRole = await getUserRoleForProject(user._id.toString(), otpData.projectId);
+            const projectRole = await getUserRoleForProject(user._id.toString(), project._id.toString());
 
             if (projectRole && projectRole.data) {
                 const token = await updateDeviceAndGenerateToken({
@@ -317,7 +334,7 @@ export const otpVerify = async (otpData: OtpInput) => {
         }
 
         if (otpData.forgotPassword) {
-            return { message: "OTP verified successfully for password reset.", success: true, verify: false };
+            return { message: "OTP verified successfully for password reset.", success: true, forgotPassword: true };
         }
 
         return { message: "OTP verified successfully.", success: true, verify: false };
@@ -327,7 +344,7 @@ export const otpVerify = async (otpData: OtpInput) => {
     }
 };
 
-export const resetPassword = async (resetPasswordData: ResetPasswordInput) => {
+const resetPassword = async (resetPasswordData: ResetPasswordInput) => {
     try {
         const user = await User.findOne({
             $or: [{ username: resetPasswordData.name }, { email: resetPasswordData.name }],
@@ -356,21 +373,21 @@ export const resetPassword = async (resetPasswordData: ResetPasswordInput) => {
     }
 };
 
-export const getUserData = async (userId: string) => {
+const getUserData = async (userId: string) => {
     try {
         const user = await User.findById(userId)
-        .populate({
-            path: 'roles',
-            populate: {
-                path: 'project',
-            },
-        })
-        .populate({
-            path: 'roles',
-            populate: {
-                path: 'permissions',
-            },
-        });
+            .populate({
+                path: 'roles',
+                populate: {
+                    path: 'project',
+                },
+            })
+            .populate({
+                path: 'roles',
+                populate: {
+                    path: 'permissions',
+                },
+            });
         if (user) {
             return { message: "User found successfully", data: user, success: true }
         }
@@ -383,4 +400,57 @@ export const getUserData = async (userId: string) => {
         logger.error("Error getting user:", err);
         return { message: `Error getting user.`, success: false };
     }
+}
+
+const checkIfDataExists = async (userData: UserCheckData) => {
+    const { username, mobile, email } = userData;
+    const response: any = {};
+
+    try {
+        if (username) {
+            const userWithUsername = await User.findOne({ username });
+            if (userWithUsername) {
+                response.username = false;
+            } else {
+                response.username = true;
+            }
+        }
+
+        if (mobile) {
+            const userWithMobile = await User.findOne({ mobile });
+            if (userWithMobile) {
+                response.mobile = false;
+            } else {
+                response.mobile = true;
+            }
+        }
+
+        if (email) {
+            const userWithEmail = await User.findOne({ email });
+            if (userWithEmail) {
+                response.email = false;
+            } else {
+                response.email = true;
+            }
+        }
+
+        return { ...response, success: true };
+
+    } catch (err: any) {
+        logger.error("Error getting data:", err);
+        return { message: `Error getting data.`, success: false };
+    }
+};
+
+export const userService = {
+    getUserRoleForProject,
+    generateOtpForUser,
+    forgotPassword,
+    createUser,
+    getUserData,
+    logIn,
+    checkIfDataExists,
+    resetPassword,
+    updateUserData,
+    otpVerify,
 }

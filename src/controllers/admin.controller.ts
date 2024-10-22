@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
-import { createPermission, createProject, createRole, deletePermission, deleteProject, deleteRole, getAllUsers, getPermissionById, getPermissionByIds, getPermissions, getProjectById, getProjectByIds, getProjects, getRoleById, getRoleByIds, getRoles, updatePermission, updateProject, updateRole } from "../services/admin.service.ts";
+import { adminService } from "../services/admin.service.ts";
 
 //admin controllers
 
-export const getUsers = async (req: Request, res: Response) => {
+const getUsers = async (req: Request, res: Response) => {
     try {
-        const user = await getAllUsers();
+        const user = await adminService.getAllUsers();
         res.send(user);
     }
     catch (err: any) {
@@ -13,13 +13,11 @@ export const getUsers = async (req: Request, res: Response) => {
     }
 }
 
-
-
 //project controllers
 
-export const addProject = async (req: Request, res: Response) => {
+const addProject = async (req: Request, res: Response) => {
     try {
-        const project = await createProject(req.body);
+        const project = await adminService.createProject(req.body);
         res.send(project);
     }
     catch (err: any) {
@@ -27,9 +25,9 @@ export const addProject = async (req: Request, res: Response) => {
     }
 }
 
-export const getAllProjects = async (req: Request, res: Response) => {
+const getAllProjects = async (req: Request, res: Response) => {
     try {
-        const projects = await getProjects();
+        const projects = await adminService.getProjects();
         res.send(projects);
     }
     catch (err: any) {
@@ -37,9 +35,9 @@ export const getAllProjects = async (req: Request, res: Response) => {
     }
 }
 
-export const getProjectDataById = async (req: Request, res: Response) => {
+const getProjectDataById = async (req: Request, res: Response) => {
     try {
-        const project = await getProjectById(req.params.projectId);
+        const project = await adminService.getProjectById(req.params.projectId);
         res.send(project);
     }
     catch (err: any) {
@@ -47,9 +45,9 @@ export const getProjectDataById = async (req: Request, res: Response) => {
     }
 }
 
-export const getProjectDataByIds = async (req: Request, res: Response) => {
+const getProjectDataByIds = async (req: Request, res: Response) => {
     try {
-        const projects = await getProjectByIds(req.body.projectIds);
+        const projects = await adminService.getProjectByIds(req.body.projectIds);
         res.send(projects);
     }
     catch (err: any) {
@@ -57,9 +55,9 @@ export const getProjectDataByIds = async (req: Request, res: Response) => {
     }
 }
 
-export const updateProjectData = async (req: Request, res: Response) => {
+const updateProjectData = async (req: Request, res: Response) => {
     try {
-        const project = await updateProject(req.params.projectId, req.body);
+        const project = await adminService.updateProject(req.params.projectId, req.body);
         res.send(project);
     }
     catch (err: any) {
@@ -67,9 +65,9 @@ export const updateProjectData = async (req: Request, res: Response) => {
     }
 }
 
-export const deleteProjectData = async (req: Request, res: Response) => {
+const deleteProjectData = async (req: Request, res: Response) => {
     try {
-        const projects = await deleteProject(req.params.projectId);
+        const projects = await adminService.deleteProject(req.params.projectId);
         res.send(projects);
     }
     catch (err: any) {
@@ -81,9 +79,9 @@ export const deleteProjectData = async (req: Request, res: Response) => {
 
 //permission controllers
 
-export const addPermission = async (req: Request, res: Response) => {
+const addPermission = async (req: Request, res: Response) => {
     try {
-        const permission = await createPermission(req.body);
+        const permission = await adminService.createPermission(req.body);
         res.send(permission);
     }
     catch (err: any) {
@@ -91,9 +89,9 @@ export const addPermission = async (req: Request, res: Response) => {
     }
 }
 
-export const getAllPermissions = async (req: Request, res: Response) => {
+const getAllPermissions = async (req: Request, res: Response) => {
     try {
-        const permissions = await getPermissions();
+        const permissions = await adminService.getPermissions();
         res.send(permissions);
     }
     catch (err: any) {
@@ -101,9 +99,9 @@ export const getAllPermissions = async (req: Request, res: Response) => {
     }
 }
 
-export const getPermissionDataById = async (req: Request, res: Response) => {
+const getPermissionDataById = async (req: Request, res: Response) => {
     try {
-        const permission = await getPermissionById(req.params.permissionId);
+        const permission = await adminService.getPermissionById(req.params.permissionId);
         res.send(permission);
     }
     catch (err: any) {
@@ -111,9 +109,9 @@ export const getPermissionDataById = async (req: Request, res: Response) => {
     }
 }
 
-export const getPermissionDataByIds = async (req: Request, res: Response) => {
+const getPermissionDataByIds = async (req: Request, res: Response) => {
     try {
-        const permissions = await getPermissionByIds(req.body.permissionIds);
+        const permissions = await adminService.getPermissionByIds(req.body.permissionIds);
         res.send(permissions);
     }
     catch (err: any) {
@@ -121,9 +119,9 @@ export const getPermissionDataByIds = async (req: Request, res: Response) => {
     }
 }
 
-export const updatePermissionData = async (req: Request, res: Response) => {
+const updatePermissionData = async (req: Request, res: Response) => {
     try {
-        const permission = await updatePermission(req.params.permissionId, req.body);
+        const permission = await adminService.updatePermission(req.params.permissionId, req.body);
         res.send(permission);
     }
     catch (err: any) {
@@ -131,9 +129,9 @@ export const updatePermissionData = async (req: Request, res: Response) => {
     }
 }
 
-export const deletePermissionData = async (req: Request, res: Response) => {
+const deletePermissionData = async (req: Request, res: Response) => {
     try {
-        const permission = await deletePermission(req.params.permissionId);
+        const permission = await adminService.deletePermission(req.params.permissionId);
         res.send(permission);
     }
     catch (err: any) {
@@ -144,9 +142,9 @@ export const deletePermissionData = async (req: Request, res: Response) => {
 
 // roles controller
 
-export const addRole = async (req: Request, res: Response) => {
+const addRole = async (req: Request, res: Response) => {
     try {
-        const role = await createRole(req.body);
+        const role = await adminService.createRole(req.body);
         res.send(role);
     }
     catch (err: any) {
@@ -154,9 +152,9 @@ export const addRole = async (req: Request, res: Response) => {
     }
 }
 
-export const getAllRoles = async (req: Request, res: Response) => {
+const getAllRoles = async (req: Request, res: Response) => {
     try {
-        const role = await getRoles();
+        const role = await adminService.getRoles();
         res.send(role);
     }
     catch (err: any) {
@@ -164,9 +162,9 @@ export const getAllRoles = async (req: Request, res: Response) => {
     }
 }
 
-export const getRoleByIdData = async (req: Request, res: Response) => {
+const getRoleByIdData = async (req: Request, res: Response) => {
     try {
-        const role = await getRoleById(req.params.roleId);
+        const role = await adminService.getRoleById(req.params.roleId);
         res.send(role);
     }
     catch (err: any) {
@@ -174,9 +172,9 @@ export const getRoleByIdData = async (req: Request, res: Response) => {
     }
 }
 
-export const getRolesByIdsData = async (req: Request, res: Response) => {
+const getRolesByIdsData = async (req: Request, res: Response) => {
     try {
-        const role = await getRoleByIds(req.body.roleIds);
+        const role = await adminService.getRoleByIds(req.body.roleIds);
         res.send(role);
     }
     catch (err: any) {
@@ -184,9 +182,9 @@ export const getRolesByIdsData = async (req: Request, res: Response) => {
     }
 }
 
-export const updateRoleData = async (req: Request, res: Response) => {
+const updateRoleData = async (req: Request, res: Response) => {
     try {
-        const role = await updateRole(req.params.roleId, req.body);
+        const role = await adminService.updateRole(req.params.roleId, req.body);
         res.send(role);
     }
     catch (err: any) {
@@ -194,12 +192,34 @@ export const updateRoleData = async (req: Request, res: Response) => {
     }
 }
 
-export const deleteRoleData = async (req: Request, res: Response) => {
+const deleteRoleData = async (req: Request, res: Response) => {
     try {
-        const role = await deleteRole(req.params.roleId);
+        const role = await adminService.deleteRole(req.params.roleId);
         res.send(role);
     }
     catch (err: any) {
         throw err;
     }
+}
+
+export const adminController = {
+    getUsers,
+    addProject,
+    getAllProjects,
+    getProjectDataById,
+    getProjectDataByIds,
+    updateProjectData,
+    deleteProjectData,
+    addPermission,
+    getAllPermissions,
+    getAllRoles,
+    getRoleByIdData,
+    getRolesByIdsData,
+    updateRoleData,
+    deleteRoleData,
+    getPermissionDataByIds,
+    updatePermissionData,
+    deletePermissionData,
+    addRole,
+    getPermissionDataById,
 }

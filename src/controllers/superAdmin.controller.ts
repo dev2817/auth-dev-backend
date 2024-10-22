@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
-import { getAllUsersSuper, getPermissionsSuper, getProjectsSuper, getRolesSuper } from "../services/superAdmin.service.ts";
+import { superAdminService } from "../services/superAdmin.service.ts";
 
-export const getUsers = async (req: Request, res: Response) => {
+const getUsers = async (req: Request, res: Response) => {
     try {
-        const user = await getAllUsersSuper();
+        const user = await superAdminService.getAllUsersSuper();
         res.send(user);
     }
     catch (err: any) {
@@ -11,9 +11,9 @@ export const getUsers = async (req: Request, res: Response) => {
     }
 }
 
-export const getAllRoles = async (req: Request, res: Response) => {
+const getAllRoles = async (req: Request, res: Response) => {
     try {
-        const role = await getRolesSuper();
+        const role = await superAdminService.getRolesSuper();
         res.send(role);
     }
     catch (err: any) {
@@ -21,9 +21,9 @@ export const getAllRoles = async (req: Request, res: Response) => {
     }
 }
 
-export const getAllProjects = async (req: Request, res: Response) => {
+const getAllProjects = async (req: Request, res: Response) => {
     try {
-        const role = await getProjectsSuper();
+        const role = await superAdminService.getProjectsSuper();
         res.send(role);
     }
     catch (err: any) {
@@ -31,12 +31,19 @@ export const getAllProjects = async (req: Request, res: Response) => {
     }
 }
 
-export const getAllPermissions = async (req: Request, res: Response) => {
+const getAllPermissions = async (req: Request, res: Response) => {
     try {
-        const role = await getPermissionsSuper();
+        const role = await superAdminService.getPermissionsSuper();
         res.send(role);
     }
     catch (err: any) {
         throw err;
     }
+}
+
+export const superAdminController = {
+    getAllPermissions,
+    getAllProjects,
+    getAllRoles,
+    getUsers
 }

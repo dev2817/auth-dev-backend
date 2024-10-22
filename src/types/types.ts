@@ -68,5 +68,5 @@ export type LogInInput = {
     name: string;
     password: string;
     ip: string;
-    projectId: string;
+    projectCode: string;
 }

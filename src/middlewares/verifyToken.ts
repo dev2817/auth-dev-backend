@@ -1,27 +1,28 @@
-import { Request, Response, NextFunction } from 'express';
 import { logger } from '../utils/logger.ts';
 import { verifyToken } from '../utils/token.ts';
 import { JwtPayload } from '../types/types.ts';
 
-export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
-    const token = req.headers.authorization?.split(' ')[1];
+export const authMiddleware = async (req: any, res: any, next: any) => {
+    const authorizationHeader = req.headers.authorization;
+    const token = authorizationHeader?.split(' ')[1];
 
     if (!token) {
-        return res.status(401).json({ message: 'No token provided, authorization denied', success: false });
+        res.send({ message: 'No token provided, authorization denied', success: false });
     }
 
     try {
-        const result = await verifyToken(token);
+        const result = await verifyToken(token as string);
 
         if (!result.success) {
-            return res.status(401).json({ message: 'Invalid token', success: false });
+            res.send({ message: 'Invalid token', success: false });
         }
 
-        req.user = result.data as JwtPayload;
-
+        if (result.data) {
+            req.user = result.data as JwtPayload;
+        }
         next();
-    } catch (error) {
+    } catch (error: any) {
         logger.error('Error in auth middleware:', error);
-        return res.status(500).json({ message: 'Server error', success: false });
+        res.send({ message: 'Server error', success: false });
     }
 };

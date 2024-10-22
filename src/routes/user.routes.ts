@@ -1,23 +1,28 @@
 import express from 'express';
-import { forgotPasswordData, getUserById, logInUser, otpVerifyData, resendOtp, resetPasswordData, signUpUser, updateUser } from '../controllers/user.controller.ts';
+import { authMiddleware } from '../middlewares/verifyToken.ts';
+import { validate } from '../middlewares/apiValidator.ts';
+import validationSchema from '../validations/validations.ts';
+import { userController } from '../controllers/user.controller.ts';
 
 const router = express.Router();
 
-router.route('/signUp').post(signUpUser);
+router.route('/signUp').post(validate(validationSchema.signUpValidation), userController.signUpUser);
 
-router.route('/signIn').post(logInUser);
+router.route('/signIn').post(validate(validationSchema.logInValidation), userController.logInUser);
 
-router.route('/resendOtp').post(resendOtp);
+router.route('/resendOtp').post(validate(validationSchema.resendOtpValidation), userController.resendOtp);
 
-router.route('/forgotPassword').post(forgotPasswordData);
+router.route('/forgotPassword').post(validate(validationSchema.forgotPasswordValidation), userController.forgotPasswordData);
 
-router.route('/otpVerify').post(otpVerifyData);
+router.route('/otpVerify').post(validate(validationSchema.otpVerifyValidation), userController.otpVerifyData);
 
-router.route('/resetPassword').post(resetPasswordData);
+router.route('/checkUserData').post(validate(validationSchema.checkUserDataValidation), userController.checkUserData);
 
-router.route('/updateUser/:userId').put(updateUser);
+router.route('/resetPassword').post(validate(validationSchema.resetPasswordValidation), userController.resetPasswordData);
 
-router.route('/getUserById/:userId').get(getUserById);
+router.route('/updateUser/:userId').put(validate(validationSchema.updateUserValidation), authMiddleware, userController.updateUser);
+
+router.route('/getUserById/:userId').get(validate(validationSchema.getUserByIdValidation), authMiddleware, userController.getUserById);
 
 
 export default router;
