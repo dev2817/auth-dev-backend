@@ -81,3 +81,27 @@ export type UserCheckData = {
     mobile?: "";
     email?: "";
 }
+
+export type GoogleSignData = {
+    googleUid: string;
+    name: string;
+    email: string;
+    profileImage?: string;
+    roles: string[];
+    projectCode: string;
+    ip: string;
+}
+
+export type LogInInput = {
+    name: string;
+    password: string;
+    ip: string;
+    projectCode: string;
+}
+
+export type CompleteProfileInput = {
+    email: string;
+    username: string;
+    ip: string;
+    projectCode: string;
+}

@@ -8,10 +8,11 @@ interface UserDocument extends Omit<UserType, '_id'>, Document {
 
 const userSchema = new Schema<UserDocument>({
     name: { type: String, required: true },
-    username: { type: String, unique: true, required: true },
+    username: { type: String, unique: true },
     email: { type: String, unique: true, required: true },
-    mobile: { type: String, unique: true, required: true },
-    password: { type: String, required: true },
+    mobile: { type: String, unique: true },
+    password: { type: String },
+    googleUid: { type: String },
     otp: { type: String },
     otpExpiresAt: { type: Date },
     emailVerified: { type: Boolean, default: false },

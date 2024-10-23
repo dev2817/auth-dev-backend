@@ -1,9 +1,8 @@
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
-import { LogInInput } from "../types/types.ts";
 import { logger } from "../utils/logger.ts";
 import { generateJwtToken } from "../utils/token.ts";
-import { CreateUserInput, OtpInput, ResetPasswordInput, UpdateDeviceGenerateTokenInput, UpdateUserInput, UserCheckData } from "./types/types.ts";
+import { CompleteProfileInput, CreateUserInput, GoogleSignData, LogInInput, OtpInput, ResetPasswordInput, UpdateDeviceGenerateTokenInput, UpdateUserInput, UserCheckData } from "./types/types.ts";
 import { Device, Project, Role, User } from "../models/index.ts"
 import { sendMail } from '../utils/emailSender.ts';
 
@@ -216,7 +215,7 @@ const logIn = async (loginData: LogInInput) => {
             return { message: "User not associated with this project role. Please sign up.", success: false };
         }
 
-        const isPasswordValid = await bcrypt.compare(loginData.password, user.password);
+        const isPasswordValid = await bcrypt.compare(loginData.password, user?.password || '');
         if (!isPasswordValid) {
             return { message: "Invalid password.", success: false };
         }
@@ -442,6 +441,157 @@ const checkIfDataExists = async (userData: UserCheckData) => {
     }
 };
 
+const signInWithGoogle = async (userData: GoogleSignData) => {
+    try {
+        const project = await Project.findOne({ code: userData.projectCode });
+        if (!project) {
+            return { success: false, message: "Project not found" };
+        }
+
+        let user = await User.findOne({ email: userData.email }).populate('roles');
+
+        if (!user) {
+            if (!userData.projectCode) {
+                const defaultRole = await Role.findOne({ code: "USR", isActive: true });
+                if (!defaultRole) {
+                    return { message: "Default 'USR' role not found.", success: false };
+                }
+                userData.roles = [defaultRole._id.toString()];
+            } else {
+                if (!userData.roles) {
+                    return { message: "Project role is required when a project code is provided.", success: false };
+                }
+                const projectRole = await Role.findOne({ code: userData.roles, project: project._id });
+                if (!projectRole) {
+                    return { message: `Role '${userData.roles}' not found for project.`, success: false };
+                }
+                userData.roles = [projectRole._id.toString()];
+            }
+
+            const newUser = await User.create({
+                googleUid: userData.googleUid,
+                email: userData.email,
+                name: userData.name,
+                profileImage: userData.profileImage || '',
+                roles: userData.roles,
+                emailVerified: true,
+            });
+
+            return {
+                message: "Created user successfully",
+                success: true,
+                completeProfile: false
+            };
+        }
+
+        if (!user.googleUid) {
+            user.googleUid = userData.googleUid;
+            await user.save();
+        }
+
+        const projectRole = await Role.findOne({
+            _id: { $in: user.roles },
+            project: project._id,
+        });
+
+        if (!projectRole && userData.roles) {
+            const newProjectRole = await Role.findOne({ code: userData.roles, project: project._id });
+            if (!newProjectRole) {
+                return { message: `Role '${userData.roles}' not found for project.`, success: false };
+            }
+
+            const isRoleAssigned = user.roles.some((role: any) => role._id.equals(newProjectRole._id));
+            if (!isRoleAssigned) {
+                user.roles.push(newProjectRole._id);
+                await user.save();
+            }
+
+            const token = await updateDeviceAndGenerateToken({
+                ip: userData.ip,
+                userId: user._id.toString(),
+                roleId: newProjectRole._id.toString(),
+            });
+
+            if (!token.success) {
+                return token;
+            }
+
+            return {
+                message: "Login successful",
+                success: true,
+                data: token.data,
+            };
+        }
+
+        const token = await updateDeviceAndGenerateToken({
+            ip: userData.ip,
+            userId: user._id.toString(),
+            roleId: projectRole?._id.toString() || '',
+        });
+
+        if (!token.success) {
+            return token;
+        }
+
+        return {
+            message: "Login successful",
+            success: true,
+            data: token.data,
+        };
+
+    } catch (err: any) {
+        logger.error("Error getting data:", err);
+        return { message: "Error getting data.", success: false };
+    }
+};
+
+
+const completeProfile = async (userData: CompleteProfileInput) => {
+    try {
+        const user = await User.findOne({ email: userData.email });
+
+        if (!user) {
+            return { message: "User not found. Please sign up.", success: false };
+        }
+
+        const usernameExists = await User.findOne({ username: userData.username });
+
+        if (usernameExists) {
+            return { success: false, message: 'Username already exists' };
+        }
+
+        const project = await Project.findOne({ code: userData.projectCode });
+
+        if (!project) {
+            return { success: false, message: "Project not found" }
+        }
+
+        const projectRole = await getUserRoleForProject(user._id.toString(), project._id.toString());
+
+        if (projectRole && projectRole.data) {
+            const token = await updateDeviceAndGenerateToken({
+                ip: userData.ip,
+                userId: user._id.toString(),
+                roleId: projectRole.data._id.toString(),
+            });
+
+            if (!token.success) {
+                return token;
+            }
+
+            user.username = userData.username;
+            await user.save();
+            return { message: "logged in  successfully.", success: true, data: token.data };
+        }
+
+        return { message: projectRole?.message || "Project role not found.", success: false };
+    }
+    catch (err: any) {
+        logger.error("Error updating data:", err);
+        return { message: "Error updating profile", success: false };
+    }
+}
+
 const userService = {
     getUserRoleForProject,
     generateOtpForUser,
@@ -453,6 +603,8 @@ const userService = {
     resetPassword,
     updateUserData,
     otpVerify,
+    signInWithGoogle,
+    completeProfile,
 }
 
 export default userService;

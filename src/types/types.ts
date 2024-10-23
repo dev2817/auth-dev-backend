@@ -45,6 +45,7 @@ export type User = {
     name: string;
     username: string;
     email: string;
+    googleUid?: string;
     mobile: string;
     password: string;
     profileImage?: string;
@@ -62,11 +63,4 @@ export type JwtPayload = {
     userId: string;
     roleId: string;
     ip: string;
-}
-
-export type LogInInput = {
-    name: string;
-    password: string;
-    ip: string;
-    projectCode: string;
 }

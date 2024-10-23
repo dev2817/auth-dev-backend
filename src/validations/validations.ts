@@ -85,7 +85,7 @@ const checkUserDataValidation = {
     body: Joi.object().keys({
         username: Joi.string().allow('').optional(),
         mobile: Joi.string().allow('').optional(),
-        email: Joi.string().email().allow('').optional(),
+        email: Joi.string().allow('').optional(),
     }).or('username', 'mobile', 'email').messages({
         'object.missing': 'At least one of username, mobile, or email must be provided',
     }),
@@ -342,6 +342,63 @@ const deleteRoleValidation = {
     }),
 };
 
+const googleSignInValidation = {
+    body: Joi.object().keys({
+        googleUid: Joi.string().required().messages({
+            'any.required': 'Google UID is required',
+            'string.empty': 'Google UID cannot be empty',
+        }),
+        name: Joi.string().required().messages({
+            'any.required': 'Name is required',
+            'string.empty': 'Name cannot be empty',
+        }),
+        email: Joi.string().email().required().messages({
+            'any.required': 'Email is required',
+            'string.empty': 'Email cannot be empty',
+            'string.email': 'Email must be a valid email address',
+        }),
+        profileImage: Joi.string().optional().uri().messages({
+            'string.uri': 'Profile image must be a valid URL',
+        }),
+        roles: Joi.array().items(Joi.string().required()).min(1).required().messages({
+            'any.required': 'At least one role is required',
+            'array.min': 'At least one role must be provided',
+        }),
+        projectCode: Joi.string().required().messages({
+            'any.required': 'Project code is required',
+            'string.empty': 'Project code cannot be empty',
+        }),
+        ip: Joi.string().ip().required().messages({
+            'any.required': 'IP address is required',
+            'string.empty': 'IP address cannot be empty',
+            'string.ip': 'IP address must be valid',
+        }),
+    }),
+};
+
+const completeProfileValidation = {
+    body: Joi.object().keys({
+        email: Joi.string().email().required().messages({
+            'any.required': 'Email is required',
+            'string.empty': 'Email cannot be empty',
+            'string.email': 'Email must be a valid email address',
+        }),
+        username: Joi.string().required().messages({
+            'any.required': 'Username is required',
+            'string.empty': 'Username cannot be empty',
+        }),
+        ip: Joi.string().ip().required().messages({
+            'any.required': 'IP address is required',
+            'string.empty': 'IP address cannot be empty',
+            'string.ip': 'IP address must be valid',
+        }),
+        projectCode: Joi.string().required().messages({
+            'any.required': 'Project code is required',
+            'string.empty': 'Project code cannot be empty',
+        }),
+    }),
+};
+
 const validationSchema = {
     signUpValidation,
     logInValidation,
@@ -353,6 +410,7 @@ const validationSchema = {
     updateUserValidation,
     getUserByIdValidation,
     getRoleByIdValidation,
+    googleSignInValidation,
     resetPasswordValidation,
     deleteProjectValidation,
     checkUserDataValidation,
@@ -361,6 +419,7 @@ const validationSchema = {
     getRolesByIdsValidation,
     forgotPasswordValidation,
     getProjectByIdValidation,
+    completeProfileValidation,
     getProjectsByIdsValidation,
     updatePermissionValidation,
     deletePermissionValidation,

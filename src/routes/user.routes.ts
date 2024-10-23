@@ -18,6 +18,10 @@ router.route('/otpVerify').post(validate(validationSchema.otpVerifyValidation), 
 
 router.route('/checkUserData').post(validate(validationSchema.checkUserDataValidation), userController.checkUserData);
 
+router.route('/signWithGoogle').post(validate(validationSchema.googleSignInValidation), userController.signWithGoogle);
+
+router.route('/completeProfile').post(validate(validationSchema.completeProfileValidation), userController.completeProfileData);
+
 router.route('/resetPassword').post(validate(validationSchema.resetPasswordValidation), userController.resetPasswordData);
 
 router.route('/updateUser/:userId').put(validate(validationSchema.updateUserValidation), authMiddleware, userController.updateUser);

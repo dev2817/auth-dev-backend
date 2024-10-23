@@ -92,6 +92,26 @@ const checkUserData = async (req: Request, res: Response) => {
     }
 }
 
+const signWithGoogle = async (req: Request, res: Response) => {
+    try {
+        const user = await userService.signInWithGoogle(req.body);
+        res.send(user);
+    }
+    catch (err: any) {
+        throw err;
+    }
+}
+
+const completeProfileData = async (req: Request, res: Response) => {
+    try {
+        const user = await userService.completeProfile(req.body);
+        res.send(user);
+    }
+    catch (err: any) {
+        throw err;
+    }
+}
+
 const userController = {
     signUpUser,
     updateUser,
@@ -102,6 +122,8 @@ const userController = {
     forgotPasswordData,
     resetPasswordData,
     otpVerifyData,
+    signWithGoogle,
+    completeProfileData,
 }
 
 export default userController;
