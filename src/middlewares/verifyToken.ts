@@ -8,6 +8,7 @@ const authMiddleware = async (req: any, res: any, next: any) => {
 
     if (!token) {
         res.send({ message: 'No token provided, authorization denied', success: false });
+        return;
     }
 
     try {
@@ -15,6 +16,7 @@ const authMiddleware = async (req: any, res: any, next: any) => {
 
         if (!result.success) {
             res.send({ message: 'Invalid token', success: false });
+            return;
         }
 
         if (result.data) {

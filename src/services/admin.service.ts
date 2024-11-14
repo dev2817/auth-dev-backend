@@ -48,16 +48,21 @@ const getProjects = async () => {
     }
 }
 
-const getProjectById = async (projectId: string) => {
+const getProjectById = async (code: string) => {
     try {
-        const projects = await Project.findById(projectId);
-        return { data: projects, message: "Got project successfully", success: true }
-    }
-    catch (err: any) {
+        const project = await Project.findOne({ code: code });
+
+        if (project) {
+            return { data: project, message: "Got project successfully", success: true };
+        } else {
+            return { message: "Project not found", success: false };
+        }
+    } catch (err: any) {
         logger.error("Error getting project:", err);
-        return { message: `Error getting project`, success: false };
+        return { message: "Error getting project", success: false };
     }
 }
+
 
 const getProjectByIds = async (projectIds: string[]) => {
     try {
@@ -186,7 +191,8 @@ const deletePermission = async (permissionId: string) => {
 
 const createRole = async (roleData: RoleInput) => {
     try {
-        const projectResponse = await getProjectById(roleData.project);
+        const projectResponse = await getProjectById(roleData.projectCode);
+
         if (!projectResponse.success || !projectResponse.data) {
             return { message: "Invalid project ID", success: false };
         }
@@ -199,7 +205,7 @@ const createRole = async (roleData: RoleInput) => {
         const newRole = await Role.create({
             name: roleData.name,
             code: roleData.code,
-            project: roleData.project,
+            project: projectResponse.data._id,
             permissions: permissionResponse.data.map((permission: any) => permission._id),
             isActive: true,
         });
@@ -261,7 +267,7 @@ const getRoleByIds = async (roleIds: string[]) => {
 
 const updateRole = async (roleId: string, roleData: UpdateRoleInput) => {
     try {
-        const projectResponse = await getProjectById(roleData.project);
+        const projectResponse = await getProjectById(roleData.projectCode);
         if (!projectResponse.success || !projectResponse.data) {
             return { message: "Invalid project ID", success: false };
         }
@@ -276,7 +282,7 @@ const updateRole = async (roleId: string, roleData: UpdateRoleInput) => {
             {
                 name: roleData.name,
                 code: roleData.code,
-                project: roleData.project,
+                project: projectResponse.data._id,
                 permissions: permissionResponse.data.map((permission: any) => permission._id),
                 isActive: roleData.isActive !== undefined ? roleData.isActive : true,
             },

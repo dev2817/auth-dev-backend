@@ -277,19 +277,17 @@ const createRoleValidation = {
         description: Joi.string().optional().max(255).messages({
             'string.max': 'Description must be at most 255 characters long',
         }),
-        project: Joi.string().required().messages({
-            'any.required': 'Project ID is required',
-            'string.empty': 'Project ID must not be empty',
+        projectCode: Joi.string().required().messages({
+            'any.required': 'Project code is required',
+            'string.empty': 'Project code must not be empty',
         }),
         permissions: Joi.array()
-            .items(Joi.string().required())
-            .min(1)
-            .required()
-            .messages({
-                'any.required': 'At least one permission is required',
-                'array.base': 'Permissions must be an array',
-                'array.min': 'At least one permission must be specified',
-            }),
+        .items(Joi.string())
+        .min(0)
+        .messages({
+            'array.base': 'Permissions must be an array',
+            'array.min': 'At least one permission must be specified',
+        }),    
     }),
 };
 
@@ -325,8 +323,8 @@ const updateRoleValidation = {
             'any.required': 'Code is required',
         }),
         description: Joi.string().optional(),
-        project: Joi.string().required().messages({
-            'any.required': 'Project is required',
+        projectCode: Joi.string().required().messages({
+            'any.required': 'Project code is required',
         }),
         permissions: Joi.array().items(Joi.string()).optional(),
         isActive: Joi.boolean().optional(),

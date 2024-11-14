@@ -31,7 +31,7 @@ export type RoleInput = {
     name: string;
     code: string;
     description?: string;
-    project: string;
+    projectCode: string;
     permissions: string[];
 };
 
@@ -51,7 +51,7 @@ export type UpdateRoleInput = {
     name: string;
     code: string;
     description?: string;
-    project: string;
+    projectCode: string;
     permissions?: string[];
     isActive?: boolean
 };

@@ -6,6 +6,8 @@ import userController from '../controllers/user.controller.ts';
 
 const router = express.Router();
 
+router.route('/checkToken').get(userController.checkToken)
+
 router.route('/signUp').post(validate(validationSchema.signUpValidation), userController.signUpUser);
 
 router.route('/signIn').post(validate(validationSchema.logInValidation), userController.logInUser);

@@ -255,7 +255,7 @@ const updateUserData = async (userId: string, userData: UpdateUserInput) => {
         );
 
         if (!updatedUser) {
-            throw new Error(`User with ID ${userId} not found`);
+            return { message: "User not found", success: false }
         }
 
         logger.info("User updated successfully:", updatedUser);
