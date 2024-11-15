@@ -239,6 +239,7 @@ const logIn = async (loginData: LogInInput) => {
             message: "Login successful",
             success: true,
             data: token.data,
+            userId: user._id.toString(),
         };
     } catch (err: any) {
         logger.error("Error logging in:", err);
@@ -520,6 +521,7 @@ const signInWithGoogle = async (userData: GoogleSignData) => {
                 message: "Login successful",
                 success: true,
                 data: token.data,
+                userId: user._id.toString(),
             };
         }
 
@@ -537,6 +539,7 @@ const signInWithGoogle = async (userData: GoogleSignData) => {
             message: "Login successful",
             success: true,
             data: token.data,
+            userId: user._id.toString(),
         };
 
     } catch (err: any) {
